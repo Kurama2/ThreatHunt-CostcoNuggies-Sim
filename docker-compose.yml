@@ -1,0 +1,31 @@
+services:
+  elasticsearch:  # Mocks Sentinel workspace—ingest SigninLogs-like data
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false  # Dev mode
+    ports:
+      - "9200:9200"  # For KQL queries via curl/Kibana
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+  kibana:  # Viz for hunts (KQL syntax similar to Sentinel)
+    image: docker.elastic.co/kibana/kibana:8.15.3
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+  wazuh:  # SIEM/EDR—rules feed into ELK; mock Purview alerts
+    image: wazuh/wazuh-manager:4.7.0
+    ports:
+      - "1514:1514/udp"  # Syslog for log ingestion
+      - "55000:55000"   # API for rules
+    volumes:
+      - ./src/rules:/var/ossec/etc/rules  # Mount custom YAML (KQL-inspired)
+  n8n:  # SOAR—playbooks trigger on Wazuh/Sentinel mocks
+    image: n8nio/n8n
+    ports:
+      - "5678:5678"
+    volumes:
+      - ./src/integrations:/root/.n8n/workflows  # Mount playbooks
+volumes:
+  esdata:  # Persist logs for FP testing
