@@ -27,5 +27,15 @@ services:
       - "5678:5678"
     volumes:
       - ./src/integrations:/root/.n8n/workflows  # Mount playbooks
+  grafana:  # Metrics dashboard for FP/MTTR viz (Step 7.1)
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - elasticsearch
+
 volumes:
   esdata:  # Persist logs for FP testing
+  grafana-data:  # Persist Grafana dashboards

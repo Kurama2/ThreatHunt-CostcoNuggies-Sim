@@ -14,10 +14,6 @@
 - **Threats**: 5% Nuggies chain (geo + DLP + EDR IOCs)—MITRE T1078 sim.
 - Run Output Example: 5000 logs, 30 threats, 38 FPs.
 
-## kc7 Validation
-- Query Tested: `SigninLogs | where vpn_connected == false | summarize by ip_geo`.
-- Local vs. kc7: [Insert screenshot]—Delta <10%.
-
 ## Complexity Tests & Hunt Results (Run on 2025-11-30)
 - **Baseline Stats**: Threats (RU/CN + no VPN): 30, FPs (CA trips): 38, DLP Matches: 1625 (high RNG; baseline ~105), Victim Total: 39, Victim Suspicious: 5, Victim DLP: 98, Victim EDR: 8.
 - **Nuggies Chain Hunt**: UserPrincipalName: nuggie_victim@costco.com AND suspicious: true → 5 hits.
@@ -25,5 +21,4 @@
 - **EDR Pivot**: UserPrincipalName: nuggie_victim@costco.com AND edr_process: nuggie_beacon.exe → 8 hits (RU subset: 1).
 - **Chain Overlap**: UserPrincipalName: nuggie_victim@costco.com AND suspicious: true AND dlp_policy_match: true → 2 hits (phish → exfil escalation).
 - **FP Noise Variant (25% CA)**: vpn_connected: false → ~1250 bypass hits; tuned with ip_geo: CA AND hour(TimeGenerated) between (9 and 17) → ~200 hits (84% FP drop, RU threats intact).
-- **kc7 Validation**: Chain KQL (e.g., SigninLogs | where UserPrincipalName == "nuggie_victim@costco.com and suspicious == true and dlp_policy_match == true") → ~5 hits on sample data (delta <15%; screenshot: kc7-chain.png).
 - **Why These Tests?** Simulates APT discovery via chain (5 suspicious from 39 victims, 2 overlap exfils); FP tuning balances (84% drop w/o missing 30 threats).
