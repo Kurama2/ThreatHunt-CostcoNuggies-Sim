@@ -1,0 +1,44 @@
+# Wazuh custom rule for VPN bypass threats
+# Detects high-risk geo logins without VPN (MITRE T1078: Valid Accounts - https://attack.mitre.org/techniques/T1078/)
+# Threshold >3/hour tunes FPs (e.g., whitelist business-hour CA logins).
+
+<rule id="100001" level="12">
+  <!-- Level 12: High severity (triggers alerts; 0-16 scale, 12+ = SOC priority) -->
+  <if_sid>550</if_sid>  <!-- Base Wazuh rule ID for logins (extends existing login events) -->
+  
+  <!-- Condition 1: No VPN connected (core anomaly) -->
+  <field name="vpn_connected">false</field>
+  
+  <!-- Condition 2: High-risk geo (RU/CN regex match for threats) -->
+  <field name="ip_geo" type="pcre2">(RU|CN)</field>
+  
+  <!-- Group by user: Same user repeating (prevents single-event noise) -->
+  <same_field>UserPrincipalName</same_field>
+  
+  <!-- Threshold: >3 events in 60s (reduces FPs from low-volume logins) -->
+  <group>3</group>
+  <timeframe>60</timeframe>
+  
+  <description>VPN Bypass from High-Risk Geo (Nuggies IOC)</description>
+  
+  <mitre>
+    <id>T1078</id>  <!-- MITRE tactic: Valid Accounts (adversary uses stolen creds via bypass) -->
+  </mitre>
+
+  <!-- Webhook to SOAR playbook (e.g., n8n for EDR isolate or FP email) -->
+  <alert_output>
+    <webhook>
+      <url>http://localhost:5678/webhook/vpn-alert</url>  <!-- SOAR endpoint for automation -->
+      <method>POST</method>
+      <headers>
+        <header>
+          <key>Content-Type</key>
+          <value>application/json</value>
+        </header>
+      </headers>
+      <body>
+        {"UserPrincipalName": "{{rule.description}}", "ip_geo": "{{rule.fields.ip_geo}}", "TimeGenerated": "{{rule.timestamp}}"}  <!-- Payload for SOAR enrich (user/geo/time) -->
+      </body>
+    </webhook>
+  </alert_output>
+</rule>
