@@ -4,10 +4,10 @@
 This is my attempt at learning the basics of a Threat Detection Engineer workflow: Starting with hypothesis-driven hunts to spot VPN bypass threats (like 37 high-risk RU/CN logins amid 22 CA FPs), iterating on rules to hit 0.98 precision, and automating responses via a simple SOAR mock (MTTR under 1 min). I built it with open-source staples (ELK for logs, Wazuh for SIEM, Python for mocks) to showcase polyvalent skills and creativity—fork and run to see detections in action.
 
 ## Challenges & Learnings
-Building this sim felt like piecing together a puzzle—each part (hunts, rules, automation) clicked with some trial and error. Here's what stood out, broken down simply.
+Building this sim felt like piecing together a puzzle, each part (hunts, rules, automation) filled with some trial and error.
 
 ### Challenges
-- **RNG Variability**: Chain hits often rolled low (just 1 escalation event)—I tuned the victim probability to 20% to make demos reliable without forcing every run to feel like a major breach (balances realism with playability).
+- **RNG Variability**: Chain hits often rolled low (just 1 escalation event) tuned the victim probability to 20% to make demos reliable without forcing every run to feel like a major breach.
 - **FP Noise Overload**: Early rules flagged all 450 bypasses, drowning in 22 CA FPs—I iterated geo + time whitelisting (CA 9-17) to slash 84% FPs while nabbing 85% threats, proving data-driven tweaks beat guesswork.
 - **JSON Parsing Headaches**: pd.read_json choked on gen quirks like null strings—switched to json.loads with strict=False and defaults for bulletproof 5000-log loads (learned to always validate input formats early).
 

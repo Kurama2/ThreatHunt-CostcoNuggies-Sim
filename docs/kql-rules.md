@@ -5,7 +5,7 @@ These KQL rules adapt the sim's VPN breach detection for real tools. Sentinel fo
 ## Run every 1h, lookback 1h; Sensitivity: High; MITRE T1048
 DLPAll
 | where TimeGenerated > ago(1h)  // 1-hour window
-| where PolicyMatch == true  // DLP policy violation (PII leak)
+| where DLP_policy == "Dlp_Alert_PII_exfil"  // DLP policy violation (PII leak)  // DLP policy violation (PII leak)
 | summarize EventCount = count(), FirstSeen = min(TimeGenerated), LastSeen = max(TimeGenerated) by UserPrincipalName
 | where EventCount > 1  // Burst >1 (tunes FPs, flags nuggie_victim)
 | join kind=inner (SigninLogs | where suspicious == true) on UserPrincipalName  // Cross with suspicious for chain

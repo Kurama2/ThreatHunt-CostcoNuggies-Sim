@@ -12,6 +12,8 @@ I stuck to open-source tools that are free and easy to set up with Docker. They'
 
 - **soar_mock.py**: Custom Python script for the automation pipeline. Simulates alert handling (EDR for RU threats, email for CA FPs) without complex UI.
 
+- **Grok**: AI assistant for code polishing, debugging quirks, KQL rule tuning, and to iterate processes (e.g., "bypass + geo = threat?"). Grok bridged the gap between my current knowledge and what I was trying to achieve!
+
 ## Glossary
 Basic definitions for terms in the sim.
 
