@@ -19,7 +19,7 @@ Pivoting to DLP exfil chains (H2), the 85 matches showed a burst: nuggie_victim@
 CostcoNuggies kicked off with phishing lures to bypass VPN (T1078 initial access). nuggie_victim fell for it: 3 RU logins in 1 hour (threshold >3 from VPN rule) triggered the SIEM alert. Escalation was quick:
 - DLP flagged 1 PII exfil (regex for SSN-like patterns in 85 total matches).
 - EDR spotted nuggie_beacon.exe (beaconing C2, MITRE T1048 exfiltration).
-- Chain: Login → Exfil → Beacon (1 hit in H3 table, timestamp RU geo with True DLP/suspicious).
+- Chain: Login → Exfil → Beacon (1 hit in H3 table, timestamp RU geo with True DLP/suspicious). *Note: In real attacks, beaconing (C2 callback) would probably come before exfil to test the connection first, simplified here for flow, but tools like EDR catch it in parallel anyway.*
 
 Without tuning, it'd flood the SOC with 450 alerts (V1 0.02 precision). Geo + time whitelist (CA 9-17 ignored) dropped FPs 84%, focusing on the 37 RU threats.
 
